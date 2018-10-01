@@ -17,3 +17,11 @@ These steps are meant to guide a workshop where we will build a live polling app
     - `python3 -m http.server --bind localhost 4000`
     - `php -S localhost:3000`
     - `elm-live src/Main.elm --dir=public`
+
+## Step 2
+
+Add in WebSocket port, connect to firebase
+
+## Step 3
+
+Add port and listen on JS side for messages from Elm app to send to firebase via websockets
