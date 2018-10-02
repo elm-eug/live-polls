@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Polls</title>
     <script src="app.js"></script>
+    <script src="WebSocketHandler.js"></script>
 </head>
 <body>
     <div id="app"></div>
     <script>
         const app = Elm.Main.init({flags: "The wiring is correct.", node: document.querySelector('#app')})
+        WebSocketHandler.subscribe(app.ports.cmdPort, app.ports.subPort);
     </script>
 </body>
 </html>
