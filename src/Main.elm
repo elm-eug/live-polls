@@ -1,12 +1,14 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, text)
+import Json.Decode as JD exposing (Decoder)
+import Json.Encode as JE exposing (Value)
 
 
 
 {--The view function takes the model and represents it in virtual dom which
-can emit messagfes (This is what "Html Msg" means) --}
+can emit messages (This is what "Html Msg" means) --}
 
 
 view : Model -> Html Msg
@@ -34,6 +36,8 @@ We can define it in terms of built in types, or just our own key words --}
 
 type Msg
     = DidNothing
+    | Send Value
+    | Receive Value
 
 
 
@@ -64,7 +68,16 @@ runtime) that need to be run (Like sending an Http request) --}
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( initModel "", Cmd.none )
+    let
+        cmd =
+            case msg of
+                Send value ->
+                    cmdPort value
+
+                _ ->
+                    Cmd.none
+    in
+    ( initModel "", cmd )
 
 
 
@@ -75,7 +88,7 @@ stuff from Javascript — these can happen during the lifetime of the app --}
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    subPort Receive
 
 
 
@@ -92,3 +105,13 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
+
+
+
+{--Here are the ports for communicating with the JavaScript in public/WebSocket.js --}
+
+
+port cmdPort : Value -> Cmd msg
+
+
+port subPort : (Value -> msg) -> Sub msg
