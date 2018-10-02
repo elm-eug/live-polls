@@ -6,7 +6,7 @@
 
 Supports three messages, through the cmdPort:
 
-    { tag: 'open', args: { key: <string>, message: <string> } }
+    { tag: 'open', args: { key: <string>, message: <url> } }
     { tag: 'close', args: { key: <string> } }
     { tag: 'send', args: { key: <string>, message: <string> } }
 
@@ -31,25 +31,29 @@ var WebSocketHandler = {};
   WebSocketHandler.dispatch = dispatch; // for debugging
 
   function subscribe(cmdPort, subPort) {
-    send = subPort.send;
-    cmdPort.subscribe(function(command) {
-      if (typeof(command) == 'object') {
-        var tag = command.tag;
-        var args = command.args;
-        dispatch(tag, args);
-      }
-    });
+    if (subPort) {
+      send = subPort.send;
+    } else {
+      // Debugging
+      send = function(v) { console.log(v); }
+    }
+    if (cmdPort) {
+      cmdPort.subscribe(function(command) {
+        if (typeof(command) == 'object') {
+          var tag = command.tag;
+          var args = command.args;
+          dispatch(tag, args);
+        }
+      });
+    }
   }
 
-  function returnObject(tag, args) {
-    send({tag: tag, args: args});
+  function returnObject(tag, key, message) {
+    send({tag: tag, args: { key: key, message: message} });
   }
 
   function returnError(key, err) {
-    returnObject('error',
-                 { key: key,
-                   message: err
-                 });
+    returnObject('error', key, err);
   }
 
   function dispatch(tag, args) {
@@ -80,26 +84,17 @@ var WebSocketHandler = {};
     }
     socket.addEventListener('open', function(event) {
       console.log('Socket connected for URL: ' + url);
-      returnObject('connected',
-                   { key: key,
-                     message: 'Socket connected for url: ' + url
-                   });
+      returnObject('connected', key, 'Socket connected for url: ' + url);
     });
     socket.addEventListener('message', function(event) {
       var message = event.data;
       console.log('Received for "' + key + '": ' + message);
-      returnObject('received',
-                   { key: key,
-                     message: message
-                   });
+      returnObject('received', key, message);
     });
     socket.addEventListener('close', function(event) {
 	  console.log('"' + key + '" closed');
       delete sockets[key];        // for open errors
-      returnObject('closed',
-                   { key: key,
-                     message: "Socket closed unexpectedly."
-                   });
+      returnObject('closed', key, 'Socket closed unexpectedly.');
     });
   } 
 
@@ -124,10 +119,7 @@ var WebSocketHandler = {};
     try {
       delete sockets[key];
       socket.close();
-      returnObject('closed',
-                   { key : key,
-                     message: "Socket closed."
-                   });
+      returnObject('closed', key, 'Socket closed.');
     } catch(err) {
       returnError(key, 'Close error: ' + err.name);
     }
