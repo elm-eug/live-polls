@@ -4,15 +4,7 @@ import Browser
 import Html exposing (Html, text)
 import Json.Decode exposing (Decoder, Value, decodeValue, field, map, string)
 import Json.Encode
-
-
-
-{--Let's add a new structure called a Poll --}
-
-
-type alias Poll =
-    { text : String
-    }
+import Poll exposing (Poll)
 
 
 

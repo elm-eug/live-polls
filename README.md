@@ -61,3 +61,8 @@ update msg model =
 
 - Note `(Json.Encode.Value -> msg)` and `UpdatePoll Json.Encode.Value`. `activePoll` wants a message that is constructed from a Json value.
 - Now that the basic wiring is setup we can slap on some drywall and get it painted.
+
+# All done! You can start playing around and build from here.
+
+- Change the `Poll` type alias and the associated decoder
+- Put them in `Poll.elm`

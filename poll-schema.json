@@ -1,0 +1,32 @@
+{
+  "9876": {
+    "questions": [{
+      "text": "Is this a good demo?",
+      "choices": [{
+          "text": "Yes",
+          "votes": 0
+        },
+        {
+          "text": "No",
+          "votes": 0
+        },
+        {
+          "text": "Maybe",
+          "votes": 0
+        }
+      ]
+    },
+    {
+      "text": "What is Elm?",
+      "choices": [{
+          "text": "A programming language",
+          "votes": 0
+        },
+        {
+          "text": "A tree",
+          "votes": 0
+        }
+      ]
+    }]
+  }
+}
