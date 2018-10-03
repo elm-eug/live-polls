@@ -2,7 +2,7 @@ port module Main exposing (activePoll, main)
 
 import Browser
 import Html exposing (Html, text)
-import Json.Decode exposing (Decoder, Value, decodeValue, field, map, string)
+import Json.Decode
 import Json.Encode
 import Poll exposing (Poll)
 
@@ -54,9 +54,9 @@ initModel p =
 affects that need to be run right off the bat --}
 
 
-init : Value -> ( Model, Cmd Msg )
+init : Json.Decode.Value -> ( Model, Cmd Msg )
 init value =
-    case decodeValue pollDecoder value of
+    case Poll.fromValue value of
         Ok poll ->
             ( initModel poll, Cmd.none )
 
@@ -70,15 +70,6 @@ init value =
 
 
 {--This allows us to transforming incoming Json into a Poll --}
-
-
-pollDecoder : Decoder Poll
-pollDecoder =
-    map Poll
-        (field "text" string)
-
-
-
 {--The update function recieves messages and the latest version of the model,
 and returns a new Model along with any side affects (Commands to the Elm
 runtime) that need to be run (Like sending an Http request) --}
@@ -88,7 +79,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdatePoll value ->
-            case Json.Decode.decodeValue pollDecoder value of
+            case Poll.fromValue value of
                 Ok p ->
                     ( { model | poll = p }, Cmd.none )
 
@@ -120,7 +111,7 @@ Program. Here we are passing a record to the element function. This record
 contains all the important functions we implemented above --}
 
 
-main : Program Value Model Msg
+main : Program Json.Decode.Value Model Msg
 main =
     Browser.element
         { init = init
