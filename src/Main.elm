@@ -2,8 +2,7 @@ port module Main exposing (activePoll, main)
 
 import Browser
 import Html exposing (Html, text)
-import Json.Decode
-import Json.Encode
+import Json.Encode exposing (Value)
 import Poll exposing (Poll)
 
 
@@ -36,7 +35,7 @@ We can define it in terms of built in types, or just our own key words --}
 
 type Msg
     = DidNothing
-    | UpdatePoll Json.Encode.Value
+    | UpdatePoll Value
 
 
 
@@ -54,7 +53,7 @@ initModel p =
 affects that need to be run right off the bat --}
 
 
-init : Json.Decode.Value -> ( Model, Cmd Msg )
+init : Value -> ( Model, Cmd Msg )
 init value =
     case Poll.fromValue value of
         Ok poll ->
@@ -65,7 +64,7 @@ init value =
                 _ =
                     Debug.log "bad decode" err
             in
-            ( initModel (Poll ""), Cmd.none )
+            ( initModel (Poll []), Cmd.none )
 
 
 
@@ -111,7 +110,7 @@ Program. Here we are passing a record to the element function. This record
 contains all the important functions we implemented above --}
 
 
-main : Program Json.Decode.Value Model Msg
+main : Program Value Model Msg
 main =
     Browser.element
         { init = init
@@ -121,4 +120,4 @@ main =
         }
 
 
-port activePoll : (Json.Encode.Value -> msg) -> Sub msg
+port activePoll : (Value -> msg) -> Sub msg
