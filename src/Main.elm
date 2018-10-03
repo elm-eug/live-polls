@@ -1,4 +1,4 @@
-port module Main exposing (main)
+port module Main exposing (activePoll, main)
 
 import Browser
 import Html exposing (Html, text)
@@ -44,6 +44,7 @@ We can define it in terms of built in types, or just our own key words --}
 
 type Msg
     = DidNothing
+    | UpdatePoll Json.Encode.Value
 
 
 
@@ -93,7 +94,21 @@ runtime) that need to be run (Like sending an Http request) --}
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        UpdatePoll value ->
+            case Json.Decode.decodeValue pollDecoder value of
+                Ok p ->
+                    ( { model | poll = p }, Cmd.none )
+
+                Err e ->
+                    let
+                        _ =
+                            Debug.log "bad decode" e
+                    in
+                    ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 
@@ -104,7 +119,7 @@ stuff from Javascript — these can happen during the lifetime of the app --}
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    activePoll UpdatePoll
 
 
 
@@ -123,4 +138,4 @@ main =
         }
 
 
-port pollListener : (Json.Encode.Value -> msg) -> Sub msg
+port activePoll : (Json.Encode.Value -> msg) -> Sub msg

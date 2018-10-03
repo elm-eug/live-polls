@@ -53,45 +53,23 @@ async function asyncCall() {
 asyncCall();
 */
 
-        var pollRef = db.ref('/poll' + window.location.pathname);
-        
-        function getData(){
-            return pollRef.once('value', function (snapshot) {
-                return snapshot.val();
-            })
-        }
-
-        async function go(){
-
-            var app = Elm.Main.init({
-                flags: await getData(),
+    var app = Elm.Main.init({
+                flags: {text: "loading..."},
                 node: document.querySelector('#app')
-            })
-
-            var textRef = db.ref('poll' + window.location.pathname + '/text');
-            textRef.on('value', function (snapshot) {
-                console.log("updated:", snapshot.val())
-                app.ports.pollListener.send(snapshot.val());
             });
-
-        }
-        go()
+    
+    var pollRef = db.ref('/poll' + window.location.pathname);
         
-        
+    pollRef.once('value', function (snapshot) {
+        console.log("got:", snapshot.val())
+        app.ports.activePoll.send(snapshot.val());
+    })
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
+    var textRef = db.ref('poll' + window.location.pathname);
+    textRef.on('value', function (snapshot) {
+        console.log("updated:", snapshot.val())
+        app.ports.activePoll.send(snapshot.val());
+    });
 
 
 
