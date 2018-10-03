@@ -57,27 +57,41 @@ asyncCall();
                 flags: {text: "loading..."},
                 node: document.querySelector('#app')
             });
-    
-    var pollRef = db.ref('/poll' + window.location.pathname);
+    var pollId = window.location.pathname;
+    var pollRef = db.ref('/poll' + pollId);
         
     pollRef.once('value', function (snapshot) {
         console.log("got:", snapshot.val())
         app.ports.activePoll.send(snapshot.val());
     })
 
-    var textRef = db.ref('poll' + window.location.pathname);
+    // Listen for events on the poll
+    var textRef = db.ref('poll' + pollId);
     textRef.on('value', function (snapshot) {
         console.log("updated:", snapshot.val())
         app.ports.activePoll.send(snapshot.val());
     });
 
-    // Listen for events on the poll
+    // Vote
+    app.ports.answerPoll.subscribe(function(msg){
+        vote(pollId, msg[0], msg[1]);
+    })
     
     
-    // Update the text of a poll
-    function writePoll(id, text) {
-        db.ref('poll/' + id).set({
-            text: text,
+    // Update the votes!
+    function vote(pId, qIndex, cIndex) {
+        console.log(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`);
+        db.ref(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`)
+          .transaction(function(votes) {
+            return (votes || 0) + 1;
+        });
+    }
+
+    function reset(pId, qIndex, cIndex) {
+        console.log(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`);
+        db.ref(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`)
+          .transaction(function(votes) {
+            return 0;
         });
     }
     

@@ -2,7 +2,7 @@ port module Main exposing (activePoll, main)
 
 import Browser
 import Html exposing (Html, text)
-import Json.Encode exposing (Value)
+import Json.Encode as E
 import Poll exposing (Poll)
 
 
@@ -34,8 +34,8 @@ We can define it in terms of built in types, or just our own key words --}
 
 
 type Msg
-    = DidNothing
-    | PollChanged Value
+    = Answer Int Int
+    | PollChange E.Value
 
 
 
@@ -53,7 +53,7 @@ initModel p =
 affects that need to be run right off the bat --}
 
 
-init : Value -> ( Model, Cmd Msg )
+init : E.Value -> ( Model, Cmd Msg )
 init value =
     case Poll.fromValue value of
         Ok poll ->
@@ -76,7 +76,7 @@ runtime) that need to be run (Like sending an Http request) --}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        PollChanged value ->
+        PollChange value ->
             case Poll.fromValue value of
                 Ok p ->
                     ( { model | poll = p }, Cmd.none )
@@ -88,8 +88,8 @@ update msg model =
                     in
                     ( model, Cmd.none )
 
-        _ ->
-            ( model, Cmd.none )
+        Answer questionIndex choiceIndex ->
+            ( model, answerPoll <| E.list E.int [ questionIndex, choiceIndex ] )
 
 
 
@@ -100,7 +100,7 @@ stuff from Javascript — these can happen during the lifetime of the app --}
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    activePoll PollChanged
+    activePoll PollChange
 
 
 
@@ -109,7 +109,7 @@ Program. Here we are passing a record to the element function. This record
 contains all the important functions we implemented above --}
 
 
-main : Program Value Model Msg
+main : Program E.Value Model Msg
 main =
     Browser.element
         { init = init
@@ -119,4 +119,7 @@ main =
         }
 
 
-port activePoll : (Value -> msg) -> Sub msg
+port activePoll : (E.Value -> msg) -> Sub msg
+
+
+port answerPoll : E.Value -> Cmd msg
