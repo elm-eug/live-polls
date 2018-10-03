@@ -1,8 +1,9 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, text)
 import Json.Decode exposing (Decoder, Value, decodeValue, field, map, string)
+import Json.Encode
 
 
 
@@ -120,3 +121,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
+
+
+port pollListener : (Json.Encode.Value -> msg) -> Sub msg

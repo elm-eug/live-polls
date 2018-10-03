@@ -26,24 +26,77 @@
         // Get a reference to the database service
         var db = firebase.database();
 
-        // Create a reference to the poll at this location
+
+
+
+
+
+
+
+
+/*
+function resolveAfter2Seconds() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('resolved');
+    }, 2000);
+  });
+}
+
+async function asyncCall() {
+  console.log('calling');
+  var result = await resolveAfter2Seconds();
+  console.log(result);
+  // expected output: 'resolved'
+}
+
+asyncCall();
+*/
+
         var pollRef = db.ref('/poll' + window.location.pathname);
         
-        // Start the app up with this poll
-        pollRef.once('value').then(function (snapshot) {
-            console.log(snapshot.val())
-            Elm.Main.init({
-                flags: snapshot.val(),
+        function getData(){
+            return pollRef.once('value', function (snapshot) {
+                return snapshot.val();
+            })
+        }
+
+        async function go(){
+
+            var app = Elm.Main.init({
+                flags: await getData(),
                 node: document.querySelector('#app')
             })
-        });
+
+            var textRef = db.ref('poll' + window.location.pathname + '/text');
+            textRef.on('value', function (snapshot) {
+                console.log("updated:", snapshot.val())
+                app.ports.pollListener.send(snapshot.val());
+            });
+
+        }
+        go()
         
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Listen for events on the poll
-        var textRef = db.ref('poll' + window.location.pathname + '/text');
-        textRef.on('value', function (snapshot) {
-            console.log("updated:", snapshot.val())
-            // TODO: Tell the Elm runtime about this!
-        });
+        
         
         // Update the text of a poll
         function writePoll(id, text) {

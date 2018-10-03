@@ -29,6 +29,7 @@ These steps are meant to guide a workshop where we will build a live polling app
 
 ## Step 3: Send the ships to the ports.
 
+- [Ports](https://guide.elm-lang.org/interop/ports.html)!
 Add port and listen on JS side for messages from Elm app to send to firebase via websockets
 
 ## Step 4: Put aesthetics on it.
