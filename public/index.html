@@ -1,15 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Polls</title>
+    <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-database.js"></script>
+
     <script src="app.js"></script>
 </head>
+
 <body>
     <div id="app"></div>
     <script>
-        const app = Elm.Main.init({flags: "The wiring is correct.", node: document.querySelector('#app')})
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBnNTAcOIY1UxqoGsVEilXL-6dILXbyOs4",
+            authDomain: "live-polls-a7d6d.firebaseapp.com",
+            databaseURL: "https://live-polls-a7d6d.firebaseio.com",
+            storageBucket: "live-polls-a7d6d.appspot.com"
+        };
+        firebase.initializeApp(config);
+
+        // Get a reference to the database service
+        var db = firebase.database();
+
+        // Create a reference to the poll at this location
+        var pollRef = db.ref('/poll' + window.location.pathname);
+        
+        // Start the app up with this poll
+        pollRef.once('value').then(function (snapshot) {
+            console.log(snapshot.val())
+            Elm.Main.init({
+                flags: snapshot.val(),
+                node: document.querySelector('#app')
+            })
+        });
+        
+        // Listen for events on the poll
+        var textRef = db.ref('poll' + window.location.pathname + '/text');
+        textRef.on('value', function (snapshot) {
+            console.log("updated:", snapshot.val())
+            // TODO: Tell the Elm runtime about this!
+        });
+        
+        // Update the text of a poll
+        function writePoll(id, text) {
+            db.ref('poll/' + id).set({
+                text: text,
+            });
+        }
     </script>
 </body>
+
 </html>

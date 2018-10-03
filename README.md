@@ -2,7 +2,8 @@
 
 These steps are meant to guide a workshop where we will build a live polling app using Elm 0.19 and WebSockets.
 
-## Step 1: Rolled steel for making boilers.
+## Step 1: Roll the steel for making boilers.
+
 - Write some Elm: `elm repl`
 - Generate an Elm project: `elm init`
 - `touch src/Main.elm`
@@ -18,10 +19,16 @@ These steps are meant to guide a workshop where we will build a live polling app
     - `php -S localhost:3000`
     - `elm-live src/Main.elm --dir=public`
 
-## Step 2
+## Step 2: Set it all on fire.
 
-Add in WebSocket port, connect to firebase
+- Create [Firebase](https://firebase.google.com/) Realtime Database, or just use mine.
+- [Read and write some data](https://firebase.google.com/docs/database/web/read-and-write?authuser=0)
+- Change the [Flags type](https://guide.elm-lang.org/interop/flags.html)
+- `elm install elm/json` to make it a direct dependancy (So we can import it! Indirect dependencies are the dependencies of your dependencies.)
+- You should have some data in your view from firebase
 
-## Step 3
+## Step 3: Send the ships to the ports.
 
 Add port and listen on JS side for messages from Elm app to send to firebase via websockets
+
+## Step 4: Put aesthetics on it.

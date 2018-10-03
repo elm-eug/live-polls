@@ -2,6 +2,16 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, text)
+import Json.Decode exposing (Decoder, Value, decodeValue, field, map, string)
+
+
+
+{--Let's add a new structure called a Poll --}
+
+
+type alias Poll =
+    { text : String
+    }
 
 
 
@@ -11,8 +21,7 @@ can emit messagfes (This is what "Html Msg" means) --}
 
 view : Model -> Html Msg
 view model =
-    "Hello, World. "
-        ++ model.path
+    Debug.toString model.poll
         |> text
 
 
@@ -22,7 +31,7 @@ a record we will call the "Model" You could call it "State" if you wanted --}
 
 
 type alias Model =
-    { path : String
+    { poll : Poll
     }
 
 
@@ -40,9 +49,9 @@ type Msg
 {--This helper function accepts a String argument to use inside our Model --}
 
 
-initModel : String -> Model
-initModel path =
-    { path = path
+initModel : Poll -> Model
+initModel p =
+    { poll = p
     }
 
 
@@ -51,9 +60,28 @@ initModel path =
 affects that need to be run right off the bat --}
 
 
-init : String -> ( Model, Cmd Msg )
-init path =
-    ( initModel path, Cmd.none )
+init : Value -> ( Model, Cmd Msg )
+init value =
+    case decodeValue pollDecoder value of
+        Ok poll ->
+            ( initModel poll, Cmd.none )
+
+        Err err ->
+            let
+                _ =
+                    Debug.log "bad decode" err
+            in
+            ( initModel (Poll ""), Cmd.none )
+
+
+
+{--This allows us to transforming incoming Json into a Poll --}
+
+
+pollDecoder : Decoder Poll
+pollDecoder =
+    map Poll
+        (field "text" string)
 
 
 
@@ -64,7 +92,7 @@ runtime) that need to be run (Like sending an Http request) --}
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( initModel "", Cmd.none )
+    ( model, Cmd.none )
 
 
 
@@ -84,7 +112,7 @@ Program. Here we are passing a record to the element function. This record
 contains all the important functions we implemented above --}
 
 
-main : Program String Model Msg
+main : Program Value Model Msg
 main =
     Browser.element
         { init = init
