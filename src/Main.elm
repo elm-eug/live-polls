@@ -68,7 +68,6 @@ init value =
 
 
 
-{--This allows us to transforming incoming Json into a Poll --}
 {--The update function recieves messages and the latest version of the model,
 and returns a new Model along with any side affects (Commands to the Elm
 runtime) that need to be run (Like sending an Http request) --}
