@@ -35,7 +35,7 @@ We can define it in terms of built in types, or just our own key words --}
 
 type Msg
     = DidNothing
-    | UpdatePoll Value
+    | PollChanged Value
 
 
 
@@ -76,7 +76,7 @@ runtime) that need to be run (Like sending an Http request) --}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        UpdatePoll value ->
+        PollChanged value ->
             case Poll.fromValue value of
                 Ok p ->
                     ( { model | poll = p }, Cmd.none )
@@ -100,7 +100,7 @@ stuff from Javascript — these can happen during the lifetime of the app --}
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    activePoll UpdatePoll
+    activePoll PollChanged
 
 
 
