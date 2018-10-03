@@ -71,17 +71,15 @@ asyncCall();
         app.ports.activePoll.send(snapshot.val());
     });
 
-
-
-        // Listen for events on the poll
-        
-        
-        // Update the text of a poll
-        function writePoll(id, text) {
-            db.ref('poll/' + id).set({
-                text: text,
-            });
-        }
+    // Listen for events on the poll
+    
+    
+    // Update the text of a poll
+    function writePoll(id, text) {
+        db.ref('poll/' + id).set({
+            text: text,
+        });
+    }
     </script>
 </body>
 
