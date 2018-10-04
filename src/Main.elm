@@ -1,7 +1,9 @@
 port module Main exposing (activePoll, main)
 
 import Browser
-import Html exposing (Html, text)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Json.Encode as E
 import Poll exposing (Poll)
 
@@ -13,8 +15,46 @@ can emit messagfes (This is what "Html Msg" means) --}
 
 view : Model -> Html Msg
 view model =
-    Debug.toString model.poll
-        |> text
+    List.indexedMap questionView model.poll.questions
+        |> div outerStyles
+
+
+questionView : Int -> Poll.Question -> Html Msg
+questionView qIndex question =
+    div [ s "margin-bottom" "48px" ]
+        [ h2 [] [ text question.text ]
+        , div []
+            (List.indexedMap
+                (choiceView qIndex)
+                question.choices
+            )
+        ]
+
+
+choiceView qIndex cIndex choice =
+    div [ s "margin-bottom" "20px" ]
+        [ button
+            [ s "font-size" "24px"
+            , s "cursor" "pointer"
+            , onClick <| Answer qIndex cIndex
+            ]
+            [ text <| choice.text ]
+        , text <| " " ++ votesVisual choice.votes
+        ]
+
+
+votesVisual v =
+    String.repeat v "▉"
+
+
+s =
+    style
+
+
+outerStyles =
+    [ s "padding" "24px"
+    , s "font-family" "sans-serif"
+    ]
 
 
 

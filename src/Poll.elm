@@ -1,4 +1,4 @@
-module Poll exposing (Poll, fromValue)
+module Poll exposing (Poll, Question, fromValue)
 
 import Json.Decode
     exposing
@@ -16,7 +16,7 @@ import Json.Decode
 
 
 type alias Poll =
-    { question : List Question
+    { questions : List Question
     }
 
 
