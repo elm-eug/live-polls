@@ -66,3 +66,11 @@ update msg model =
 
 - Change the `Poll` type alias and the associated decoder
 - Put them in `Poll.elm`
+
+# 🍴 Interested in forking? Here's some ideas!
+
+- Presentation mode
+- Poll builder
+- Scoring results
+
+Big thanks to [@daved](https://github.com/daved) for his help debugging Promises and [@billstclair](https://github.com/billstclair) for his PR exploring general purpose ports!
