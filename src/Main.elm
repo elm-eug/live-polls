@@ -32,7 +32,7 @@ questionView qIndex question =
 
 
 choiceView qIndex cIndex choice =
-    div [ s "margin-bottom" "20px" ]
+    div [ s "margin-bottom" "20px", s "word-break" "break-word" ]
         [ button
             [ s "font-size" "24px"
             , s "cursor" "pointer"
