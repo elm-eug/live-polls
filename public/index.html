@@ -31,67 +31,40 @@
         // Get a reference to the database service
         var db = firebase.database();
 
-
-
-
-
-
-
-
-
-/*
-function resolveAfter2Seconds() {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve('resolved');
-    }, 2000);
-  });
-}
-
-async function asyncCall() {
-  console.log('calling');
-  var result = await resolveAfter2Seconds();
-  console.log(result);
-  // expected output: 'resolved'
-}
-
-asyncCall();
-*/
-
-    var app = Elm.Main.init({
-                flags: {text: "loading..."},
-                node: document.querySelector('#app')
-            });
-    var pollId = window.location.pathname;
-    var pollRef = db.ref('/poll' + pollId);
-        
-    pollRef.once('value', function (snapshot) {
-        console.log("got:", snapshot.val())
-        app.ports.activePoll.send(snapshot.val());
-    })
-
-    // Listen for events on the poll
-    var textRef = db.ref('poll' + pollId);
-    textRef.on('value', function (snapshot) {
-        console.log("updated:", snapshot.val())
-        app.ports.activePoll.send(snapshot.val());
-    });
-
-    // Vote
-    app.ports.answerPoll.subscribe(function(msg){
-        vote(pollId, msg[0], msg[1]);
-    })
-    
-    
-    // Update the votes!
-    function vote(pId, qIndex, cIndex) {
-        console.log(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`);
-        db.ref(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`)
-          .transaction(function(votes) {
-            return (votes || 0) + 1;
+        var app = Elm.Main.init({
+            flags: {
+                text: "loading..."
+            },
+            node: document.querySelector('#app')
         });
-    }
-    
+        var pollId = window.location.pathname;
+        var pollRef = db.ref('/poll' + pollId);
+
+        pollRef.once('value', function (snapshot) {
+            console.log("got:", snapshot.val())
+            app.ports.activePoll.send(snapshot.val());
+        })
+
+        // Listen for events on the poll
+        var textRef = db.ref('poll' + pollId);
+        textRef.on('value', function (snapshot) {
+            console.log("updated:", snapshot.val())
+            app.ports.activePoll.send(snapshot.val());
+        });
+
+        // Vote
+        app.ports.answerPoll.subscribe(function (msg) {
+            vote(pollId, msg[0], msg[1]);
+        })
+
+        // Update the votes!
+        function vote(pId, qIndex, cIndex) {
+            console.log(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`);
+            db.ref(`poll/${pId}/questions/${qIndex}/choices/${cIndex}/votes`)
+                .transaction(function (votes) {
+                    return (votes || 0) + 1;
+                });
+        }
     </script>
 </body>
 
